@@ -1,5 +1,9 @@
 # Changes
 
+## Unreleased
+
+- Report, attempt page: the button that saves the review status and notes was labelled "1"; it now reads "Save status and notes".
+
 ## 1.0.1 (2026-11-22)
 
 - Commercial licence per site (paid once), purchased through Moodle Marketplace. Licence page for site administrators (Site administration → Plugins → Local plugins → Exam Telemetry → Manage licence) with the plan and the support end date; the licence is re-checked weekly by a scheduled task and a network error never disables an activated licence.
