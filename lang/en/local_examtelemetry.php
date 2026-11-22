@@ -65,6 +65,7 @@ $string['backtoadminreports'] = 'All administration reports';
 $string['backtodashboard'] = 'Back to dashboard';
 $string['healthystatus'] = 'Healthy';
 $string['incidentstatus'] = 'Incident review status';
+$string['saveincident'] = 'Save status and notes';
 $string['administratornotes'] = 'Administrator investigation notes';
 $string['monitoring'] = 'Monitoring';
 $string['monitoringnoincident'] = 'Monitoring — no incident detected so far';

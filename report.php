@@ -207,7 +207,8 @@ if ($detail) {
         );
         echo html_writer::label(get_string('administratornotes', 'local_examtelemetry'), 'notes');
         echo html_writer::tag('textarea', s($incident->notes ?? ''), ['name' => 'notes', 'id' => 'notes', 'rows' => 4]);
-        echo html_writer::empty_tag('input', ['type' => 'submit', 'name' => 'updatesubmit', 'value' => 1,
+        echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'updatesubmit', 'value' => 1]);
+        echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('saveincident', 'local_examtelemetry'),
             'class' => 'btn btn-primary']);
         echo html_writer::end_tag('form');
     }
