@@ -73,7 +73,7 @@ Expected:
 
 ## 6. Slow response
 
-Use a controlled stage2 delay or network throttling. Compare:
+Use a controlled staging delay or network throttling. Compare:
 
 - browser `serverwaitms`
 - Apache `%D`
@@ -86,7 +86,7 @@ Expected:
 
 ## 7. Failed final submission
 
-This test must be performed only on Stage2 with a disposable attempt:
+This test must be performed only on staging with a disposable attempt:
 
 1. Reach the quiz summary page normally.
 2. Open Chrome DevTools and select **Network**.
