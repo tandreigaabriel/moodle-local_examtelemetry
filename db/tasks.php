@@ -26,6 +26,15 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
+        'classname' => '\local_examtelemetry\task\renew_license',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => 'R',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '0',
+    ],
+    [
         'classname' => '\local_examtelemetry\task\classify_incidents',
         'blocking' => 0,
         'minute' => '*/5',

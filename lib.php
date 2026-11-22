@@ -31,6 +31,9 @@ function local_examtelemetry_require_js(): void {
     if (!get_config('local_examtelemetry', 'enabled') || !isloggedin() || isguestuser()) {
         return;
     }
+    if (!\local_examtelemetry\local\license::is_valid()) {
+        return;
+    }
 
     $path = $PAGE->url->get_path();
     $supported = [

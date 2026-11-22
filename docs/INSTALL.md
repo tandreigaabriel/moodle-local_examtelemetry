@@ -36,6 +36,10 @@ sudo -u apache /usr/bin/php /var/www/html/moodle/admin/cli/purge_caches.php
 
 ## Configure
 
+Activate the licence first: **Site administration → Plugins → Local plugins → Exam Telemetry → Manage
+licence**, paste the key received with the Moodle Marketplace purchase and press *Activate licence*.
+Until a licence is active the collector is not loaded and the report shows a licence notice.
+
 Open:
 
 ```text

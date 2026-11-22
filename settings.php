@@ -28,6 +28,19 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_examtelemetry', get_string('pluginname', 'local_examtelemetry'));
     $ADMIN->add('localplugins', $settings);
 
+    if ($ADMIN->fulltree) {
+        $licensestatus = \local_examtelemetry\local\license::get_status();
+        $settings->add(new admin_setting_heading(
+            'local_examtelemetry/licenseheading',
+            get_string('licenseheading', 'local_examtelemetry'),
+            html_writer::tag('p', get_string('license_' . $licensestatus, 'local_examtelemetry')) .
+                html_writer::link(
+                    new moodle_url('/local/examtelemetry/license.php'),
+                    get_string('licensesettings', 'local_examtelemetry')
+                )
+        ));
+    }
+
     $settings->add(new admin_setting_configcheckbox(
         'local_examtelemetry/enabled',
         get_string('settingsenabled', 'local_examtelemetry'),

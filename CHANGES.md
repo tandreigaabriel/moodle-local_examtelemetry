@@ -1,5 +1,12 @@
 # Changes
 
+## 1.0.1 (2026-11-22)
+
+- Commercial licence per site (paid once), purchased through Moodle Marketplace. Licence page for site administrators (Site administration → Plugins → Local plugins → Exam Telemetry → Manage licence) with the plan and the support end date; the licence is re-checked weekly by a scheduled task and a network error never disables an activated licence.
+- Without a valid licence the collector is not loaded on quiz pages, `collect.php` answers HTTP 403 and the report shows a licence notice instead. Existing data is kept.
+- Privacy API: the licence service is declared as an external location (site host name and licence key).
+- PHPUnit: `license_test` (activation, trial expiry, domain binding, revocation, transport failure, incomplete response).
+
 ## 1.0.0 (2026-11-22)
 
 First Moodle Marketplace release.

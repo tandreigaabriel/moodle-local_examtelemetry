@@ -8,11 +8,28 @@ scheduled incident classifier.
 ## Current release
 
 - Component: `local_examtelemetry`
-- Plugin version: `2026112200`
-- Release: `1.0.0`
+- Plugin version: `2026112201`
+- Release: `1.0.1`
 - Moodle: 4.5 and 5.0
 - PHP: 8.1+
-- Licence: GNU GPL v3 or later
+- Licence: GNU GPL v3 or later (code); a site licence key is required to use the plugin — see below
+
+## Commercial licence
+
+Exam Telemetry is a **commercial plugin sold through Moodle Marketplace**. The code is GPL v3 or later;
+using it on a site requires a licence key for that site.
+
+- **Purchase:** one licence per Moodle site (domain), **paid once** (perpetual licence), bought on the
+  plugin's Moodle Marketplace listing. The licence key is issued after the purchase and is bound to the
+  site's domain. The licence includes updates and e-mail support for the period shown on the licence
+  page (Site administration → Plugins → Local plugins → Exam Telemetry → Manage licence).
+- **Without a valid key** the telemetry collector is not loaded on quiz pages, `collect.php` refuses
+  data (HTTP 403) and the report page shows a licence notice. Existing events, incidents and timing
+  rows are kept; teachers are asked to contact their site administrator.
+- **What is sent to the licence service:** the site host name, the licence key and the product name, to
+  `https://tandreig.com/api/license/activate` when the key is activated and to `…/renew` once a week by
+  the scheduled task "Refresh the site licence". No telemetry, quiz or user data are sent; everything
+  the plugin records stays on your Moodle site. A network error never disables an activated licence.
 
 ## What it records
 
