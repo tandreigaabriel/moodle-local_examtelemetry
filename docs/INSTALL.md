@@ -42,7 +42,7 @@ Open:
 Site administration → Plugins → Local plugins → Exam telemetry
 ```
 
-Recommended stage2 values:
+Recommended staging values:
 
 | Setting | Value |
 |---|---:|
@@ -53,7 +53,7 @@ Recommended stage2 values:
 | Retention | 30 days |
 
 An empty CMID list enables collection for every quiz. Do not use an empty list
-on production until stage2 testing and privacy review are complete.
+on production until staging testing and privacy review are complete.
 
 ## Report
 

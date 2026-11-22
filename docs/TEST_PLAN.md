@@ -1,4 +1,4 @@
-# Stage2 validation plan
+# Staging validation plan
 
 ## 1. Installation
 
@@ -28,7 +28,7 @@ In Chrome DevTools **Console**, run:
 setTimeout(() => {
     const end = performance.now() + 7000;
     while (performance.now() < end) {
-        // Deliberately block this Stage2 browser tab for seven seconds.
+        // Deliberately block this browser tab for seven seconds.
     }
 }, 1000);
 ```
@@ -49,7 +49,7 @@ Introduce a controlled stage-only rejected Promise in the console.
 
 ```javascript
 setTimeout(() => {
-    throw new Error('Exam telemetry Stage2 test error');
+    throw new Error('Exam telemetry staging test error');
 }, 1000);
 ```
 

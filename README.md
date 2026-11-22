@@ -8,11 +8,11 @@ scheduled incident classifier.
 ## Current release
 
 - Component: `local_examtelemetry`
-- Plugin version: `2026072804`
-- Release: `0.2.0-beta`
-- Moodle: 4.5+
+- Plugin version: `2026112200`
+- Release: `1.0.0`
+- Moodle: 4.5 and 5.0
 - PHP: 8.1+
-- Status: beta evaluation build; complete the production safeguards before production use
+- Licence: GNU GPL v3 or later
 
 ## What it records
 
@@ -114,14 +114,6 @@ Deploy the complete plugin directory, then run:
 cd /path/to/moodle
 sudo -u <php-user> php admin/cli/upgrade.php --non-interactive
 sudo -u <php-user> php admin/cli/purge_caches.php
-```
-
-For the tested Amazon Linux 2 Stage2 installation:
-
-```bash
-cd /var/www/html/moodle
-sudo -u apache /usr/bin/php admin/cli/upgrade.php --non-interactive
-sudo -u apache /usr/bin/php admin/cli/purge_caches.php
 ```
 
 After updating, confirm `amd/build/telemetry.min.js` starts with `define(`.
@@ -291,11 +283,11 @@ rotation separately from Moodle. A Linux example is available in
 retention does not delete Apache log files; Apache/logrotate retention must be
 configured independently.
 
-### Complete Stage2 procedure for Ubuntu/Debian
+### Complete procedure for Ubuntu/Debian
 
 This concrete first-time procedure assumes Moodle is installed at
 `/var/www/moodle`, Apache logs are under `/var/log/apache2`, and Moodle/PHP runs
-as `www-data`. Change these values to match Stage2.
+as `www-data`. Change these values to match your server.
 
 Verify the installation:
 
@@ -349,7 +341,7 @@ sudo systemctl reload apache2
 sudo systemctl status apache2 --no-pager
 ```
 
-Complete a Stage2 quiz submission and inspect the result:
+Complete a test quiz submission and inspect the result:
 
 ```bash
 sudo tail -n 20 /var/log/apache2/quiz_submission_timing.log
@@ -358,7 +350,7 @@ sudo tail -n 20 /var/log/apache2/quiz_submission_timing.log
 A correlatable record looks like:
 
 ```text
-request="POST /mod/quiz/processattempt.php HTTP/1.1" status=303 duration_us=1433000 referer="https://stage2.example/mod/quiz/summary.php?attempt=123&cmid=45"
+request="POST /mod/quiz/processattempt.php HTTP/1.1" status=303 duration_us=1433000 referer="https://moodle.example/mod/quiz/summary.php?attempt=123&cmid=45"
 ```
 
 Configure Moodle's **Apache quiz timing log** setting as:
@@ -435,7 +427,7 @@ For RHEL, Rocky Linux, or AlmaLinux, use:
 
 - [Installation and configuration](docs/INSTALL.md)
 - [Architecture and classification](docs/ARCHITECTURE.md)
-- [Stage2 test plan](docs/TEST_PLAN.md)
+- [Staging test plan](docs/TEST_PLAN.md)
 - [Privacy and data protection](docs/PRIVACY.md)
 - [Apache submission timing](docs/APACHE_TIMING.md)
 - [Roadmap](docs/ROADMAP.md)
