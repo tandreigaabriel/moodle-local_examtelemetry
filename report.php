@@ -27,6 +27,7 @@ require_once(__DIR__ . '/lib.php');
 require_login();
 $context = context_system::instance();
 require_capability('local/examtelemetry:viewreports', $context);
+\local_examtelemetry\local\license::require_valid();
 
 $detail = optional_param('attemptid', 0, PARAM_INT);
 $view = optional_param('view', 'incidents', PARAM_ALPHA);

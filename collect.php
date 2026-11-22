@@ -27,6 +27,11 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
 require_login();
+if (!\local_examtelemetry\local\license::is_valid()) {
+    http_response_code(403);
+    echo json_encode(['status' => 'error', 'message' => 'unlicensed']);
+    exit;
+}
 header('Content-Type: application/json; charset=utf-8');
 
 $payload = json_decode(file_get_contents('php://input'));

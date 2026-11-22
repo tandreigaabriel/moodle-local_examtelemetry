@@ -210,3 +210,25 @@ $string['privacy:metadata:apache:durationms'] = 'How long the web server took to
 $string['privacy:metadata:apache:timemodified'] = 'When the duration was read from the log.';
 $string['privacy:metadata:apachelog'] = 'The optional Apache timing log configured by the site administrator is read, never written; its retention is controlled by the web server.';
 $string['privacy:metadata:apachelog:referer'] = 'The request referrer, used only to find the quiz attempt ID.';
+
+// Licence.
+$string['license_askadmin'] = 'Ask your site administrator to activate a licence.';
+$string['license_purchase'] = 'Exam Telemetry is purchased through Moodle Marketplace (one licence per site, paid once). The licence key is issued after the purchase and is tied to this site\'s domain.';
+$string['license_trial_expired'] = 'The trial has expired. Activate a licence to continue collecting telemetry.';
+$string['license_unlicensed'] = 'A valid licence is required: telemetry is not collected and the report is unavailable until a licence key is activated.';
+$string['license_valid'] = 'The licence is active.';
+$string['licenseactivate'] = 'Activate licence';
+$string['licenseactivated'] = 'Licence activated.';
+$string['licensefailed'] = 'Activation failed. Check the key and try again.';
+$string['licenseheading'] = 'Licence';
+$string['licensekey'] = 'Licence key';
+$string['licenseplan'] = 'Plan: {$a}';
+$string['licenseplan_perpetual'] = 'Perpetual';
+$string['licenseplan_trial'] = 'Trial';
+$string['licensesettings'] = 'Manage licence';
+$string['licensesupport'] = 'Updates and support until {$a}';
+$string['licensetrialends'] = 'Trial ends on {$a}';
+$string['privacy:metadata:tandreig_license'] = 'The licence service validates the site licence.';
+$string['privacy:metadata:tandreig_license:domain'] = 'The Moodle site host name.';
+$string['privacy:metadata:tandreig_license:key'] = 'The site licence key.';
+$string['taskrenewlicense'] = 'Refresh the site licence';
