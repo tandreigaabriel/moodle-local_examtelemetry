@@ -1,0 +1,22 @@
+.examtelemetry-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:0 0 1.25rem}
+.examtelemetry-navigation{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.examtelemetry-card,.examtelemetry-fact{background:var(--bs-body-bg,#fff);border:1px solid #dfe3e7;border-radius:.55rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.examtelemetry-card span{display:block;font-size:1.75rem;font-weight:700;line-height:1.1}
+.examtelemetry-views{display:flex;gap:.5rem;margin-bottom:1rem}
+.examtelemetry-views a{padding:.45rem .75rem;border:1px solid #ccd2d8;border-radius:.4rem}
+.examtelemetry-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.65rem;margin-bottom:1rem}
+.examtelemetry-filters input,.examtelemetry-filters select{min-height:38px}
+.examtelemetry-table td{vertical-align:middle}
+.examtelemetry-badge,[class^="severity-"]{display:inline-block;border-radius:999px;padding:.2rem .55rem;font-weight:600;white-space:nowrap}
+.class-normal{background:#d1e7dd;color:#0f5132}.class-browser_js_freeze,.class-browser_render_delay,.class-javascript_error{background:#e8d8f5;color:#5f2583}
+.class-network_interruption{background:#cfe2ff;color:#084298}.class-server_delay,.class-server_or_network_delay{background:#ffe5c2;color:#8a4700}
+.class-failed_final_submission{background:#f8d7da;color:#842029}.class-unexplained_transition_delay{background:#fff3cd;color:#664d03}
+.class-external_integration_failure,.class-external_service_failure,.class-external_resource_failure{background:#f8d7da;color:#842029}
+.class-security_policy_failure,.class-resource_load_failure{background:#fff3cd;color:#664d03}.class-moodle_request_failure{background:#ffe5c2;color:#8a4700}.class-network_request_failure{background:#cfe2ff;color:#084298}
+.severity-critical{background:#f8d7da;color:#842029}.severity-high{background:#ffe5c2;color:#7a3e00}.severity-medium{background:#fff3cd;color:#664d03}.severity-info{background:#d1e7dd;color:#0f5132}
+.status-healthy{display:inline-block;border-radius:999px;padding:.2rem .55rem;background:#d1e7dd;color:#0f5132;font-weight:600}
+.examtelemetry-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.75rem;margin:1rem 0 1.5rem}
+.examtelemetry-fact strong{display:block;margin-bottom:.3rem}
+.examtelemetry-timeline{list-style:none;border-left:3px solid #0f6cbf;margin-left:.8rem;padding-left:1.35rem}
+.examtelemetry-timeline li{position:relative;padding:0 0 1rem}.examtelemetry-timeline li:before{content:"";position:absolute;left:-1.72rem;top:.35rem;width:.65rem;height:.65rem;border-radius:50%;background:#0f6cbf}
+.examtelemetry-timeline time{display:inline-block;min-width:6rem;color:#59636e}.examtelemetry-notes{display:grid;gap:.5rem;max-width:720px}.examtelemetry-notes textarea{width:100%}
