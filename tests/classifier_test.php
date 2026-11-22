@@ -31,6 +31,14 @@ final class classifier_test extends \advanced_testcase {
         set_config('delaythreshold', 5000, 'local_examtelemetry');
     }
 
+    /**
+     * Build a synthetic telemetry event record.
+     *
+     * @param string $type Event type.
+     * @param float|null $duration Duration in milliseconds.
+     * @param array $details Event details.
+     * @return object
+     */
     private function event(string $type, ?float $duration = null, array $details = []): object {
         return (object)[
             'eventtype' => $type,

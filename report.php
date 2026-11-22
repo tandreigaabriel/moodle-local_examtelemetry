@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 require_login();
 $context = context_system::instance();
 require_capability('local/examtelemetry:viewreports', $context);
@@ -99,8 +100,8 @@ $PAGE->requires->css('/local/examtelemetry/styles.css');
 function local_examtelemetry_device(string $ua): array {
     $browsers = ['Edge' => 'Edg/', 'Firefox' => 'Firefox/', 'Chrome' => 'Chrome/', 'Safari' => 'Safari/'];
     $oses = ['Windows' => 'Windows', 'Android' => 'Android', 'iOS' => 'iPhone', 'macOS' => 'Mac OS', 'Linux' => 'Linux'];
-    $browser = 'Other';
-    $os = 'Other';
+    $browser = get_string('other', 'local_examtelemetry');
+    $os = get_string('other', 'local_examtelemetry');
     foreach ($browsers as $name => $needle) {
         if (stripos($ua, $needle) !== false) {
             $browser = $name;
@@ -147,47 +148,41 @@ if ($detail) {
     $isinprogressnormal = $incident->attemptstate === 'inprogress' && $incident->classification === 'normal';
     $conclusion = $isinprogressnormal
         ? get_string('monitoringnoincident', 'local_examtelemetry')
-        : s($incident->classification) . ' (' . s($incident->severity) . ')';
+        : local_examtelemetry_classification_label($incident->classification) .
+            ' (' . local_examtelemetry_severity_label($incident->severity) . ')';
     $evidence = $isinprogressnormal
         ? get_string('monitoringevidence', 'local_examtelemetry')
         : s($incident->summary);
     $facts = [
-        'Student' => fullname($incident) . ($incident->idnumber ? ' (' . s($incident->idnumber) . ')' : ''),
-        'Course / quiz' => s($incident->coursename) . ' / ' . s($incident->quizname),
-        'Attempt / Moodle state' => $incident->attemptid . ' / ' . s($incident->attemptstate),
-        'Browser / OS' => $browsername . ' / ' . $osname,
-        'Automatic conclusion' => $conclusion,
-        'Likely responsible area' => get_string(
+        'fact:student' => fullname($incident) . ($incident->idnumber ? ' (' . s($incident->idnumber) . ')' : ''),
+        'fact:coursequiz' => s($incident->coursename) . ' / ' . s($incident->quizname),
+        'fact:attemptstate' => $incident->attemptid . ' / ' . s($incident->attemptstate),
+        'fact:browseros' => s($browsername) . ' / ' . s($osname),
+        'fact:conclusion' => $conclusion,
+        'fact:responsibility' => get_string(
             'responsibility:' . $incident->responsibility,
             'local_examtelemetry'
         ),
-        'Supporting evidence' => $evidence,
-        'Time to first byte' => $incident->serverwaitms === null ? '—' : round($incident->serverwaitms) . ' ms',
-        'Apache processing' => $incident->apachems === null ? '—' : round($incident->apachems) . ' ms',
-        'Longest browser block' => $incident->longesttaskms === null ? '—' : round($incident->longesttaskms) . ' ms',
-        'JavaScript / offline events' => $incident->jserrors . ' / ' . $incident->offlineevents,
-        'Resource / request failures' => $incident->resourceerrors . ' / ' . $incident->requestfailures,
-        'Integration / CSP failures' => $incident->integrationfailures . ' / ' . $incident->cspviolations,
+        'fact:evidence' => $evidence,
+        'fact:ttfb' => local_examtelemetry_ms($incident->serverwaitms),
+        'fact:apache' => local_examtelemetry_ms($incident->apachems),
+        'fact:longestblock' => local_examtelemetry_ms($incident->longesttaskms),
+        'fact:jsoffline' => $incident->jserrors . ' / ' . $incident->offlineevents,
+        'fact:resourcerequest' => $incident->resourceerrors . ' / ' . $incident->requestfailures,
+        'fact:integrationcsp' => $incident->integrationfailures . ' / ' . $incident->cspviolations,
     ];
-    foreach ($facts as $label => $value) {
-        echo html_writer::div(html_writer::tag('strong', $label) . html_writer::div($value), 'examtelemetry-fact');
+    foreach ($facts as $key => $value) {
+        echo html_writer::div(
+            html_writer::tag('strong', get_string($key, 'local_examtelemetry')) . html_writer::div($value),
+            'examtelemetry-fact'
+        );
     }
     echo html_writer::end_div();
-    echo html_writer::tag('h3', 'Client timeline');
-    $labels = [
-        'telemetry_start' => 'Telemetry started', 'navigation_timing' => 'Quiz loaded',
-        'finish_attempt_clicked' => 'Finish attempt clicked',
-        'confirmation_dialog_opened' => 'Confirmation dialog opened',
-        'final_submission_confirmed' => 'Final submission confirmed',
-        'page_hidden' => 'Page hidden', 'page_visible' => 'Page visible',
-        'transition_timing' => 'Summary displayed', 'long_task' => 'Browser main thread blocked',
-        'js_error' => 'JavaScript error', 'unhandled_rejection' => 'Unhandled JavaScript rejection',
-        'offline' => 'Network offline', 'online' => 'Network online',
-    ];
+    echo html_writer::tag('h3', get_string('clienttimeline', 'local_examtelemetry'));
     echo html_writer::start_tag('ol', ['class' => 'examtelemetry-timeline']);
     foreach ($events as $event) {
-        $label = $labels[$event->eventtype] ?? str_replace('_', ' ', ucfirst($event->eventtype));
-        $duration = $event->durationms === null ? '' : ' — ' . round($event->durationms) . ' ms';
+        $label = local_examtelemetry_event_label($event->eventtype);
+        $duration = $event->durationms === null ? '' : ' — ' . local_examtelemetry_ms($event->durationms);
         $details = json_decode($event->eventdata ?? '{}', true) ?: [];
         echo html_writer::tag('li', html_writer::tag('time', userdate($event->timeclient ?: $event->timecreated, '%H:%M:%S')) .
             html_writer::tag('strong', s($label)) . s($duration) .
@@ -204,7 +199,7 @@ if ($detail) {
         echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'incidentid', 'value' => $incident->id]);
         echo html_writer::label(get_string('incidentstatus', 'local_examtelemetry'), 'incidentstatus');
         echo html_writer::select(
-            ['open' => 'Open', 'acknowledged' => 'Acknowledged', 'resolved' => 'Resolved'],
+            local_examtelemetry_options('status', ['open', 'acknowledged', 'resolved']),
             'incidentstatus',
             $incident->status,
             false
@@ -289,9 +284,9 @@ if ($export === 'csv') {
     require_once($CFG->libdir . '/csvlib.class.php');
     $csv = new csv_export_writer();
     $csv->set_filename('exam-telemetry-' . date('Y-m-d'));
-    $csv->add_data(['Time', 'Student', 'Student number', 'Course', 'Quiz', 'Attempt', 'Classification',
-        'Severity', 'Status', 'Responsibility', 'Transition ms', 'Time to first byte ms', 'Apache ms', 'Render ms',
-        'Longest task ms', 'JS errors', 'Offline events', 'Affected students', 'Summary']);
+    $csv->add_data(local_examtelemetry_strings('csv', ['time', 'student', 'studentnumber', 'course', 'quiz', 'attempt',
+        'classification', 'severity', 'status', 'responsibility', 'transitionms', 'ttfbms', 'apachems', 'renderms',
+        'longesttaskms', 'jserrors', 'offlineevents', 'affected', 'summary']));
     foreach ($records as $record) {
         $csv->add_data([userdate($record->timemodified), fullname($record), $record->idnumber,
             $record->coursename, $record->quizname, $record->attemptid, $record->classification,
@@ -325,21 +320,29 @@ $stats = $DB->get_record_sql("SELECT COUNT(*) AS monitored,
 echo html_writer::start_div('examtelemetry-cards');
 foreach (
     [
-    'Attempts monitored' => $stats->monitored, 'Normal attempts' => $stats->normalattempts,
-    'Critical incidents' => $stats->critical, 'Browser freezes' => $stats->freezes,
-    'Server delays' => $stats->serverdelays, 'JavaScript errors' => $stats->jserrors,
-    'Network interruptions' => $stats->networkevents,
-    ] as $label => $number
+    'stat:monitored' => $stats->monitored, 'stat:normal' => $stats->normalattempts,
+    'stat:critical' => $stats->critical, 'stat:freezes' => $stats->freezes,
+    'stat:serverdelays' => $stats->serverdelays, 'stat:jserrors' => $stats->jserrors,
+    'stat:network' => $stats->networkevents,
+    ] as $key => $number
 ) {
-    echo html_writer::div(html_writer::tag('span', (int)$number) . html_writer::div($label), 'examtelemetry-card');
+    echo html_writer::div(
+        html_writer::tag('span', (int)$number) . html_writer::div(get_string($key, 'local_examtelemetry')),
+        'examtelemetry-card'
+    );
 }
 echo html_writer::end_div();
 
 $baseparams = $_GET;
+$viewlinks = [];
+foreach (['incidents', 'healthy', 'all'] as $viewname) {
+    $viewlinks[] = html_writer::link(
+        new moodle_url('/local/examtelemetry/report.php', ['view' => $viewname]),
+        get_string('view:' . $viewname, 'local_examtelemetry')
+    );
+}
 echo html_writer::div(
-    html_writer::link(new moodle_url('/local/examtelemetry/report.php', ['view' => 'incidents']), 'Incidents') . ' ' .
-    html_writer::link(new moodle_url('/local/examtelemetry/report.php', ['view' => 'healthy']), 'Healthy attempts') . ' ' .
-    html_writer::link(new moodle_url('/local/examtelemetry/report.php', ['view' => 'all']), 'All attempts'),
+    implode(' ', $viewlinks),
     'examtelemetry-views'
 );
 $courses = $DB->get_records_menu('course', null, 'fullname', 'id, fullname');
@@ -348,46 +351,45 @@ $quizzes = $DB->get_records_sql_menu("SELECT cm.id, " . $DB->sql_concat('c.short
     JOIN {quiz} q ON q.id=cm.instance JOIN {course} c ON c.id=q.course ORDER BY c.shortname,q.name", ['quiz' => 'quiz']);
 echo html_writer::start_tag('form', ['method' => 'get', 'class' => 'examtelemetry-filters']);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'view', 'value' => $view]);
-echo html_writer::empty_tag('input', ['type' => 'date', 'name' => 'datefrom', 'value' => $datefrom, 'aria-label' => 'Date from']);
-echo html_writer::empty_tag('input', ['type' => 'date', 'name' => 'dateto', 'value' => $dateto, 'aria-label' => 'Date to']);
-echo html_writer::select(['' => 'All courses'] + $courses, 'courseid', $courseid, false);
-echo html_writer::select(['' => 'All quizzes'] + $quizzes, 'cmid', $cmid, false, ['class' => 'custom-select']);
-echo html_writer::empty_tag('input', ['name' => 'student', 'value' => $student, 'placeholder' => 'Student or number']);
+echo html_writer::empty_tag('input', ['type' => 'date', 'name' => 'datefrom', 'value' => $datefrom,
+    'aria-label' => get_string('datefrom', 'local_examtelemetry')]);
+echo html_writer::empty_tag('input', ['type' => 'date', 'name' => 'dateto', 'value' => $dateto,
+    'aria-label' => get_string('dateto', 'local_examtelemetry')]);
+echo html_writer::select(['' => get_string('allcourses', 'local_examtelemetry')] + $courses, 'courseid', $courseid, false);
 echo html_writer::select(
-    ['' => 'All classifications', 'normal' => 'Normal', 'browser_js_freeze' => 'Browser issue',
-    'javascript_error' => 'JavaScript error', 'network_interruption' => 'Network issue',
-    'server_delay' => 'Server issue', 'server_or_network_delay' => 'Server/network issue',
-    'unexplained_transition_delay' => 'Transition delay', 'failed_final_submission' => 'Failed submission',
-    'external_integration_failure' => 'External integration failure',
-    'external_service_failure' => 'External service failure',
-    'external_resource_failure' => 'External resource failure',
-    'security_policy_failure' => 'Security policy failure',
-    'moodle_request_failure' => 'Moodle request failure',
-    'network_request_failure' => 'Network request failure',
-    'resource_load_failure' => 'Resource load failure'],
+    ['' => get_string('allquizzes', 'local_examtelemetry')] + $quizzes,
+    'cmid',
+    $cmid,
+    false,
+    ['class' => 'custom-select']
+);
+echo html_writer::empty_tag('input', ['name' => 'student', 'value' => $student,
+    'placeholder' => get_string('studentplaceholder', 'local_examtelemetry')]);
+echo html_writer::select(
+    ['' => get_string('allclassifications', 'local_examtelemetry')] + local_examtelemetry_options('classification', [
+        'normal', 'browser_js_freeze', 'javascript_error', 'network_interruption', 'server_delay',
+        'server_or_network_delay', 'unexplained_transition_delay', 'failed_final_submission',
+        'external_integration_failure', 'external_service_failure', 'external_resource_failure',
+        'security_policy_failure', 'moodle_request_failure', 'network_request_failure', 'resource_load_failure',
+        'browser_render_delay',
+    ]),
     'classification',
     $classification,
     false
 );
-echo html_writer::select(['' => 'All severities', 'info' => 'Info', 'medium' => 'Medium',
-    'high' => 'High', 'critical' => 'Critical'], 'severity', $severity, false);
-echo html_writer::select(['' => 'All browsers', 'chrome' => 'Chrome', 'firefox' => 'Firefox',
+echo html_writer::select(['' => get_string('allseverities', 'local_examtelemetry')] +
+    local_examtelemetry_options('severity', ['info', 'medium', 'high', 'critical']), 'severity', $severity, false);
+echo html_writer::select(['' => get_string('allbrowsers', 'local_examtelemetry'), 'chrome' => 'Chrome', 'firefox' => 'Firefox',
     'edge' => 'Edge', 'safari' => 'Safari'], 'browser', $browser, false);
-echo html_writer::select(['' => 'All operating systems', 'windows' => 'Windows', 'macos' => 'macOS',
-    'linux' => 'Linux', 'android' => 'Android', 'ios' => 'iOS'], 'os', $os, false);
-echo html_writer::select(['' => 'All statuses', 'open' => 'Open', 'acknowledged' => 'Acknowledged',
-    'resolved' => 'Resolved', 'not_applicable' => 'Healthy (not an incident)'], 'status', $status, false);
-echo html_writer::select([
-    '' => 'All responsible areas',
-    'student_device_browser' => 'Student device/browser',
-    'student_network' => 'Student network',
-    'moodle_server' => 'Moodle/server',
-    'external_service' => 'External service',
-    'exam_configuration' => 'Exam configuration',
-    'unknown_shared' => 'Server or network',
-    'unknown' => 'Unknown',
-], 'responsibility', $responsibility, false);
-echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => 'Filter', 'class' => 'btn btn-primary']);
+echo html_writer::select(['' => get_string('alloperatingsystems', 'local_examtelemetry'), 'windows' => 'Windows',
+    'macos' => 'macOS', 'linux' => 'Linux', 'android' => 'Android', 'ios' => 'iOS'], 'os', $os, false);
+echo html_writer::select(['' => get_string('allstatuses', 'local_examtelemetry')] +
+    local_examtelemetry_options('status', ['open', 'acknowledged', 'resolved', 'not_applicable']), 'status', $status, false);
+echo html_writer::select(['' => get_string('allresponsibilities', 'local_examtelemetry')] +
+    local_examtelemetry_options('responsibility', ['student_device_browser', 'student_network', 'moodle_server',
+        'external_service', 'exam_configuration', 'unknown_shared', 'unknown']), 'responsibility', $responsibility, false);
+echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('filter', 'local_examtelemetry'),
+    'class' => 'btn btn-primary']);
 echo html_writer::end_tag('form');
 
 $total = $DB->count_records_sql("SELECT COUNT(1) $sqlfrom", $params);
@@ -401,7 +403,7 @@ $records = $DB->get_records_sql(
 $baseparams['export'] = 'csv';
 echo html_writer::div(html_writer::link(
     new moodle_url('/local/examtelemetry/report.php', $baseparams),
-    'Export filtered CSV',
+    get_string('exportcsv', 'local_examtelemetry'),
     ['class' => 'btn btn-secondary']
 ), 'mb-3');
 if (!$records) {
@@ -409,30 +411,30 @@ if (!$records) {
 } else {
     $table = new html_table();
     $table->attributes['class'] = 'generaltable examtelemetry-table';
-    $table->head = ['Time', 'Student', 'Quiz', 'Attempt', 'Classification', 'Severity', 'Status',
-        'Responsible area', 'Transition', 'Time to first byte', 'Apache', 'Affected', 'Conclusion'];
+    $table->head = local_examtelemetry_strings('th', ['time', 'student', 'quiz', 'attempt', 'classification', 'severity',
+        'status', 'responsibility', 'transition', 'ttfb', 'apache', 'affected', 'conclusion']);
     foreach ($records as $record) {
         $detailurl = new moodle_url('/local/examtelemetry/report.php', ['attemptid' => $record->attemptid]);
         $classificationlabel = $record->classification === 'normal' && $record->attemptstate === 'inprogress'
             ? get_string('monitoring', 'local_examtelemetry')
-            : str_replace('_', ' ', ucfirst($record->classification));
+            : local_examtelemetry_classification_label($record->classification);
         $badge = html_writer::span(
             $classificationlabel,
             'examtelemetry-badge class-' . s($record->classification)
         );
         $table->data[] = [userdate($record->timemodified), fullname($record),
             s($record->quizname), html_writer::link($detailurl, '#' . $record->attemptid),
-            $badge, html_writer::span(s($record->severity), 'severity-' . s($record->severity)),
+            $badge, html_writer::span(local_examtelemetry_severity_label($record->severity), 'severity-' . s($record->severity)),
             $record->classification === 'normal'
                 ? html_writer::span(get_string(
                     $record->attemptstate === 'inprogress' ? 'monitoring' : 'healthystatus',
                     'local_examtelemetry'
                 ), 'status-healthy')
-                : s($record->status),
+                : local_examtelemetry_status_label($record->status),
             get_string('responsibility:' . $record->responsibility, 'local_examtelemetry'),
-            $record->transitionms === null ? '—' : round($record->transitionms) . ' ms',
-            $record->serverwaitms === null ? '—' : round($record->serverwaitms) . ' ms',
-            $record->apachems === null ? '—' : round($record->apachems) . ' ms',
+            local_examtelemetry_ms($record->transitionms),
+            local_examtelemetry_ms($record->serverwaitms),
+            local_examtelemetry_ms($record->apachems),
             (int)$record->clustercount, s($record->summary)];
     }
     echo html_writer::table($table);

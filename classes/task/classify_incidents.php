@@ -144,8 +144,7 @@ final class classify_incidents extends \core\task\scheduled_task {
             $result['confidence'] = 0.98;
             $result['responsibility'] = ($result['apachems'] ?? 0) > 5000
                 ? 'moodle_server' : 'unknown_shared';
-            $result['summary'] =
-                'Final submission was confirmed in the browser, but Moodle still reports the attempt as in progress.';
+            $result['summary'] = get_string('reason:failedsubmission', 'local_examtelemetry');
         }
         $first = reset($events);
         $now = time();

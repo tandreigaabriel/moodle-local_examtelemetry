@@ -104,13 +104,13 @@ final class classifier {
             $severity = 'critical';
             $confidence = 0.98;
             $responsibility = 'external_service';
-            $reasons[] = 'A required external exam integration reported that initialisation failed.';
+            $reasons[] = get_string('reason:integration', 'local_examtelemetry');
         } else if ($metrics['cspviolations'] > 0) {
             $classification = 'security_policy_failure';
             $severity = 'high';
             $confidence = 0.92;
             $responsibility = 'exam_configuration';
-            $reasons[] = 'The browser security policy blocked a required resource or connection.';
+            $reasons[] = get_string('reason:csp', 'local_examtelemetry');
         } else if ($metrics['requestfailures'] > 0) {
             $category = $lastrequest['category'] ?? 'unknown';
             $status = (int)($lastrequest['status'] ?? 0);
@@ -126,58 +126,58 @@ final class classifier {
             }
             $severity = $status >= 500 || $status === 0 ? 'high' : 'medium';
             $confidence = 0.88;
-            $reasons[] = 'A required browser request failed.';
+            $reasons[] = get_string('reason:request', 'local_examtelemetry');
         } else if ($metrics['resourceerrors'] > 0) {
             $isexternal = ($lastresource['category'] ?? '') === 'external';
             $classification = $isexternal ? 'external_resource_failure' : 'resource_load_failure';
             $severity = 'high';
             $confidence = 0.85;
             $responsibility = $isexternal ? 'external_service' : 'exam_configuration';
-            $reasons[] = 'A required script, stylesheet, image, or media resource failed to load.';
+            $reasons[] = get_string('reason:resource', 'local_examtelemetry');
         } else if ($metrics['offlineevents'] > 0) {
             $classification = 'network_interruption';
             $severity = in_array($severityforduration($duration), ['critical'], true) ? 'critical' : 'high';
             $confidence = 0.98;
             $responsibility = 'student_network';
-            $reasons[] = 'The browser reported an offline transition.';
+            $reasons[] = get_string('reason:offline', 'local_examtelemetry');
         } else if (($metrics['longesttaskms'] ?? 0) >= $threshold) {
             $classification = 'browser_js_freeze';
             $severity = $severityforduration((float)$metrics['longesttaskms']);
             $confidence = 0.97;
             $responsibility = 'student_device_browser';
-            $reasons[] = 'A browser main-thread task exceeded the delay threshold.';
+            $reasons[] = get_string('reason:longtask', 'local_examtelemetry');
         } else if ($metrics['jserrors'] > 0) {
             $classification = 'javascript_error';
             $severity = $severityforduration($duration) === 'info' ? 'medium' : $severityforduration($duration);
             $confidence = 0.90;
             $responsibility = 'student_device_browser';
-            $reasons[] = 'The browser reported a JavaScript exception.';
+            $reasons[] = get_string('reason:jserror', 'local_examtelemetry');
         } else if (($metrics['renderms'] ?? 0) >= $threshold) {
             $classification = 'browser_render_delay';
             $severity = $severityforduration((float)$metrics['renderms']);
             $confidence = 0.88;
             $responsibility = 'student_device_browser';
-            $reasons[] = 'Rendering after the response exceeded the delay threshold.';
+            $reasons[] = get_string('reason:render', 'local_examtelemetry');
         } else if (($metrics['apachems'] ?? 0) >= $threshold) {
             $classification = 'server_delay';
             $severity = $severityforduration((float)$metrics['apachems']);
             $confidence = 0.96;
             $responsibility = 'moodle_server';
-            $reasons[] = 'Apache measured slow PHP/Moodle request processing.';
+            $reasons[] = get_string('reason:apache', 'local_examtelemetry');
         } else if (($metrics['serverwaitms'] ?? 0) >= $threshold) {
             $classification = 'server_or_network_delay';
             $severity = $severityforduration((float)$metrics['serverwaitms']);
             $confidence = 0.75;
             $responsibility = 'unknown_shared';
-            $reasons[] = 'Time to first byte exceeded the delay threshold.';
+            $reasons[] = get_string('reason:ttfb', 'local_examtelemetry');
         } else if (($metrics['transitionms'] ?? 0) >= $threshold) {
             $classification = 'unexplained_transition_delay';
             $severity = $severityforduration((float)$metrics['transitionms']);
             $confidence = 0.60;
             $responsibility = 'unknown';
-            $reasons[] = 'Page transition exceeded the threshold without a matching client signal.';
+            $reasons[] = get_string('reason:transition', 'local_examtelemetry');
         } else {
-            $reasons[] = 'No configured incident threshold was exceeded.';
+            $reasons[] = get_string('reason:none', 'local_examtelemetry');
         }
 
         return $metrics + [

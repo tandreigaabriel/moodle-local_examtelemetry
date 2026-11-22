@@ -22,8 +22,6 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Load telemetry only on supported quiz attempt and summary pages.
  */
@@ -73,4 +71,85 @@ function local_examtelemetry_cmid_enabled(int $cmid): bool {
     }
     $ids = array_filter(array_map('intval', preg_split('/[\s,;]+/', $configured)));
     return in_array($cmid, $ids, true);
+}
+
+/**
+ * Format a millisecond value for the report ("—" when unknown).
+ *
+ * @param float|int|string|null $value Milliseconds or null.
+ * @return string
+ */
+function local_examtelemetry_ms($value): string {
+    return $value === null ? '—' : get_string('msvalue', 'local_examtelemetry', (string) round((float) $value));
+}
+
+/**
+ * Translated strings for a list of keys sharing a prefix, e.g. prefix 'th' and key 'time' → 'th:time'.
+ *
+ * @param string $prefix Key prefix.
+ * @param string[] $keys Key suffixes.
+ * @return string[] Translated strings in the same order.
+ */
+function local_examtelemetry_strings(string $prefix, array $keys): array {
+    return array_map(static function (string $key) use ($prefix): string {
+        return get_string($prefix . ':' . $key, 'local_examtelemetry');
+    }, $keys);
+}
+
+/**
+ * Select options (value => translated label) for a list of keys sharing a prefix.
+ *
+ * @param string $prefix Key prefix.
+ * @param string[] $keys Option values.
+ * @return string[] value => label.
+ */
+function local_examtelemetry_options(string $prefix, array $keys): array {
+    return array_combine($keys, local_examtelemetry_strings($prefix, $keys));
+}
+
+/**
+ * Translated label of an event type; unknown types fall back to the raw token.
+ *
+ * @param string $eventtype Event type token.
+ * @return string
+ */
+function local_examtelemetry_event_label(string $eventtype): string {
+    $manager = get_string_manager();
+    return $manager->string_exists('event:' . $eventtype, 'local_examtelemetry')
+        ? get_string('event:' . $eventtype, 'local_examtelemetry')
+        : s(str_replace('_', ' ', ucfirst($eventtype)));
+}
+
+/**
+ * Translated label of a classification; unknown values fall back to the raw token.
+ *
+ * @param string $classification Classification token.
+ * @return string
+ */
+function local_examtelemetry_classification_label(string $classification): string {
+    return get_string_manager()->string_exists('classification:' . $classification, 'local_examtelemetry')
+        ? get_string('classification:' . $classification, 'local_examtelemetry')
+        : s(str_replace('_', ' ', ucfirst($classification)));
+}
+
+/**
+ * Translated label of a severity.
+ *
+ * @param string $severity Severity token.
+ * @return string
+ */
+function local_examtelemetry_severity_label(string $severity): string {
+    return get_string_manager()->string_exists('severity:' . $severity, 'local_examtelemetry')
+        ? get_string('severity:' . $severity, 'local_examtelemetry') : s($severity);
+}
+
+/**
+ * Translated label of an incident review status.
+ *
+ * @param string $status Status token.
+ * @return string
+ */
+function local_examtelemetry_status_label(string $status): string {
+    return get_string_manager()->string_exists('status:' . $status, 'local_examtelemetry')
+        ? get_string('status:' . $status, 'local_examtelemetry') : s($status);
 }

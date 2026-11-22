@@ -95,7 +95,7 @@ foreach (array_slice($events, 0, max(0, $ratelimit - $recent)) as $event) {
         continue;
     }
     $eventtype = clean_param($event->eventtype ?? '', PARAM_ALPHANUMEXT);
-    $pagekind = clean_param($event->pagekind ?? ($payload->pagekind ?? 'unknown'), PARAM_ALPHANUMEXT);
+    $pagekind = mb_substr(clean_param($event->pagekind ?? ($payload->pagekind ?? 'unknown'), PARAM_ALPHANUMEXT), 0, 20);
     if (!in_array($eventtype, $allowedtypes, true)) {
         continue;
     }
