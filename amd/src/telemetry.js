@@ -193,6 +193,13 @@ const identifySubmissionAction = target => {
     const action = form?.getAttribute('action') || '';
     const name = button.getAttribute('name') || '';
     const actionName = button.dataset.action || '';
+    if (action.includes('processattempt.php') && form.querySelector('[name="finishattempt"][value="1"]')) {
+        return 'confirmation_dialog_opened';
+    }
+    if (action.includes('processattempt.php') && name === 'next' &&
+            form.querySelector('[name="nextpage"][value="-1"]')) {
+        return 'finish_attempt_clicked';
+    }
     const text = button.tagName === 'INPUT' ? button.value : button.textContent;
     const signature = `${name} ${actionName} ${text} ${action}`.toLowerCase();
 
@@ -298,7 +305,8 @@ export const init = config => {
                 const button = event.target.closest('button, input[type="submit"]');
                 const signature = `${button?.name || ''} ${button?.value || ''} ${button?.textContent || ''} ` +
                     `${button?.dataset.action || ''}`.toLowerCase();
-                if (button && (signature.includes('submit') || signature.includes('confirm') ||
+                if (button && (button.matches('.modal [data-action="save"], .modal .modal-footer .btn-primary') ||
+                        signature.includes('submit') || signature.includes('confirm') ||
                         signature.includes('save'))) {
                     send('final_submission_confirmed', null, {}, true);
                     confirmationOpen = false;
