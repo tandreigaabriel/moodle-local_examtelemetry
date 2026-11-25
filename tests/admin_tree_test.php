@@ -41,11 +41,13 @@ final class admin_tree_test extends \advanced_testcase {
         role_assign($role, $user->id, $context);
         $this->setUser($user);
         $this->assertFalse(has_capability('moodle/site:config', $context));
-        $page = admin_get_root(true, false)->locate('local_examtelemetry_report');
+        admin_get_root(true, false);
+        $page = admin_get_root(false, false)->locate('local_examtelemetry_report');
         $this->assertNotNull($page);
         $this->assertTrue($page->check_access());
         $this->setUser($this->getDataGenerator()->create_user());
-        $page = admin_get_root(true, false)->locate('local_examtelemetry_report');
+        admin_get_root(true, false);
+        $page = admin_get_root(false, false)->locate('local_examtelemetry_report');
         $this->assertNotNull($page);
         $this->assertFalse($page->check_access());
     }
