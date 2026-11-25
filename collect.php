@@ -113,9 +113,17 @@ foreach (array_slice($events, 0, max(0, $ratelimit - $recent)) as $event) {
     if (isset($event->details) && is_object($event->details)) {
         foreach ((array)$event->details as $key => $value) {
             $key = clean_param((string)$key, PARAM_ALPHANUMEXT);
+            if (count($details) >= 20) {
+                break;
+            }
             if (is_scalar($value) || $value === null) {
-                $details[$key] = is_string($value)
+                $candidate = $details;
+                $candidate[$key] = is_string($value)
                     ? mb_substr(clean_param($value, PARAM_TEXT), 0, 500) : $value;
+                $encoded = json_encode($candidate, JSON_UNESCAPED_SLASHES);
+                if ($encoded !== false && strlen($encoded) <= 4096) {
+                    $details = $candidate;
+                }
             }
         }
     }
