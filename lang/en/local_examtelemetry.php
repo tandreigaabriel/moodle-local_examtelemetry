@@ -213,7 +213,6 @@ $string['privacy:metadata:apache:timemodified'] = 'When the duration was read fr
 $string['privacy:metadata:apachelog'] = 'The optional Apache timing log configured by the site administrator is read, never written; its retention is controlled by the web server.';
 $string['privacy:metadata:apachelog:referer'] = 'The request referrer, used only to find the quiz attempt ID.';
 
-// Licence.
 $string['license_askadmin'] = 'Ask your site administrator to activate a licence.';
 $string['license_purchase'] = 'Exam Telemetry is purchased through Moodle Marketplace (one licence per site, paid once). The licence key is issued after the purchase and is tied to this site\'s domain.';
 $string['license_trial_expired'] = 'The trial has expired. Activate a licence to continue collecting telemetry.';

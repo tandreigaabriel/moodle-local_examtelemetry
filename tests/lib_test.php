@@ -21,7 +21,10 @@
  * @copyright 2026 TAG Digital Solutions Ltd <https://tandreig.com>
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_examtelemetry;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
 require_once(__DIR__ . '/fixtures/fake_license.php');
@@ -40,7 +43,8 @@ final class lib_test extends \advanced_testcase {
         $cleaned = local_examtelemetry_clean_details(array_fill_keys(range(1, 20), str_repeat('x', 500)));
         $this->assertLessThanOrEqual(4096, strlen(json_encode($cleaned, JSON_UNESCAPED_SLASHES)));
         $this->assertLessThan(20, count($cleaned));
-        $this->assertSame(['ok' => null], local_examtelemetry_clean_details((object)['bad' => [], 'other' => (object)[], 'ok' => null]));
+        $details = (object)['bad' => [], 'other' => (object)[], 'ok' => null];
+        $this->assertSame(['ok' => null], local_examtelemetry_clean_details($details));
     }
 
     public function test_collection_allowed_requires_setting_and_license(): void {
