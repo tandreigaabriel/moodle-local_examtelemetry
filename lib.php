@@ -63,6 +63,31 @@ function local_examtelemetry_require_js(): void {
 }
 
 /**
+ * Clean and limit event details.
+ *
+ * @param object|array $details Event details.
+ * @return array Sanitised details.
+ */
+function local_examtelemetry_clean_details(object|array $details): array {
+    $cleaned = [];
+    foreach ((array)$details as $key => $value) {
+        $key = clean_param((string)$key, PARAM_ALPHANUMEXT);
+        if (count($cleaned) >= 20) {
+            break;
+        }
+        if (is_scalar($value) || $value === null) {
+            $candidate = $cleaned;
+            $candidate[$key] = is_string($value) ? mb_substr(clean_param($value, PARAM_TEXT), 0, 500) : $value;
+            $encoded = json_encode($candidate, JSON_UNESCAPED_SLASHES);
+            if ($encoded !== false && strlen($encoded) <= 4096) {
+                $cleaned = $candidate;
+            }
+        }
+    }
+    return $cleaned;
+}
+
+/**
  * Check whether collection is enabled for a course module.
  *
  * @param int $cmid Course-module ID.

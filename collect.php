@@ -114,24 +114,8 @@ foreach (array_slice($events, 0, max(0, $ratelimit - $recent)) as $event) {
     if (!in_array($eventtype, $allowedtypes, true)) {
         continue;
     }
-    $details = [];
-    if (isset($event->details) && is_object($event->details)) {
-        foreach ((array)$event->details as $key => $value) {
-            $key = clean_param((string)$key, PARAM_ALPHANUMEXT);
-            if (count($details) >= 20) {
-                break;
-            }
-            if (is_scalar($value) || $value === null) {
-                $candidate = $details;
-                $candidate[$key] = is_string($value)
-                    ? mb_substr(clean_param($value, PARAM_TEXT), 0, 500) : $value;
-                $encoded = json_encode($candidate, JSON_UNESCAPED_SLASHES);
-                if ($encoded !== false && strlen($encoded) <= 4096) {
-                    $details = $candidate;
-                }
-            }
-        }
-    }
+    $details = isset($event->details) && is_object($event->details)
+        ? local_examtelemetry_clean_details($event->details) : [];
     $timeclient = isset($event->timeclient) ? clean_param($event->timeclient, PARAM_INT) : null;
     $clientid = mb_substr(clean_param($event->clientid ?? '', PARAM_ALPHANUMEXT), 0, 64);
     $eventhash = hash('sha256', implode(':', [
