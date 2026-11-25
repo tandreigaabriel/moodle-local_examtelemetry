@@ -18,7 +18,8 @@
  * Settings functionality.
  *
  * @package    local_examtelemetry
- * @copyright  2026 Andrei Toma
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -96,11 +97,11 @@ if ($hassiteconfig) {
         200,
         PARAM_INT
     ));
-
-    $ADMIN->add('reports', new admin_externalpage(
-        'local_examtelemetry_report',
-        get_string('report', 'local_examtelemetry'),
-        new moodle_url('/local/examtelemetry/report.php'),
-        'local/examtelemetry:viewreports'
-    ));
 }
+
+$ADMIN->add('reports', new admin_externalpage(
+    'local_examtelemetry_report',
+    get_string('report', 'local_examtelemetry'),
+    new moodle_url('/local/examtelemetry/report.php'),
+    'local/examtelemetry:viewreports'
+));

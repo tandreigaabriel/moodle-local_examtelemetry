@@ -17,8 +17,13 @@
 /**
  * Collect functionality.
  *
+ * Beacon requests during pagehide or visibility changes cannot use the normal
+ * external service response flow without putting the sesskey in the URL.
+ * This endpoint validates login, sesskey and attempt ownership.
+ *
  * @package    local_examtelemetry
- * @copyright  2026 Andrei Toma
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +32,12 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
 require_login();
-if (!\local_examtelemetry\local\license::is_valid()) {
+if (!get_config('local_examtelemetry', 'enabled')) {
+    http_response_code(403);
+    echo json_encode(['status' => 'error', 'message' => 'disabled']);
+    exit;
+}
+if (!local_examtelemetry_collection_allowed()) {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'unlicensed']);
     exit;
@@ -104,16 +114,8 @@ foreach (array_slice($events, 0, max(0, $ratelimit - $recent)) as $event) {
     if (!in_array($eventtype, $allowedtypes, true)) {
         continue;
     }
-    $details = [];
-    if (isset($event->details) && is_object($event->details)) {
-        foreach ((array)$event->details as $key => $value) {
-            $key = clean_param((string)$key, PARAM_ALPHANUMEXT);
-            if (is_scalar($value) || $value === null) {
-                $details[$key] = is_string($value)
-                    ? mb_substr(clean_param($value, PARAM_TEXT), 0, 500) : $value;
-            }
-        }
-    }
+    $details = isset($event->details) && is_object($event->details)
+        ? local_examtelemetry_clean_details($event->details) : [];
     $timeclient = isset($event->timeclient) ? clean_param($event->timeclient, PARAM_INT) : null;
     $clientid = mb_substr(clean_param($event->clientid ?? '', PARAM_ALPHANUMEXT), 0, 64);
     $eventhash = hash('sha256', implode(':', [

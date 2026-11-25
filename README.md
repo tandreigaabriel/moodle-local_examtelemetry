@@ -448,3 +448,13 @@ For RHEL, Rocky Linux, or AlmaLinux, use:
 - [Privacy and data protection](docs/PRIVACY.md)
 - [Apache submission timing](docs/APACHE_TIMING.md)
 - [Roadmap](docs/ROADMAP.md)
+
+## External requests
+
+The AJAX collector remains a dedicated endpoint because `navigator.sendBeacon()`
+on pagehide or visibility changes cannot use the normal external service response
+flow without a sesskey in the URL. It checks login, sesskey and attempt ownership.
+
+## Author and licence
+
+Developed and maintained by Andrei Toma — TAG Digital Solutions Ltd (trading as TAG Web Design & Development), https://tandreig.com. © 2026 TAG Digital Solutions Ltd.

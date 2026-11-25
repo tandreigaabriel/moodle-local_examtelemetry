@@ -1,6 +1,16 @@
 # Changes
 
-## Unreleased
+## 1.0.2 (2026-11-25)
+
+- Retain and document the authenticated beacon collector endpoint.
+- Use Moodle's automatic stylesheet loading.
+- Reject collection when telemetry is disabled.
+- Detect quiz submission actions using language-independent markup.
+- Add Moodle licence headers to JavaScript.
+- Bound event details to 20 keys and 4096 encoded bytes.
+- Select all Moodle name fields for reports and CSV.
+- Register the report page for users with the report capability.
+- Copyright holder: TAG Digital Solutions Ltd.
 
 - Report, attempt page: the button that saves the review status and notes was labelled "1"; it now reads "Save status and notes".
 

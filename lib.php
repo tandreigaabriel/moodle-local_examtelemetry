@@ -18,7 +18,8 @@
  * Lib functionality.
  *
  * @package    local_examtelemetry
- * @copyright  2026 Andrei Toma
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -59,6 +60,40 @@ function local_examtelemetry_require_js(): void {
         'longtaskthreshold' => max(50, (int)get_config('local_examtelemetry', 'longtaskthreshold')),
         'delaythreshold' => max(1000, (int)get_config('local_examtelemetry', 'delaythreshold')),
     ]]);
+}
+
+/**
+ * Check whether collection is enabled and licensed.
+ *
+ * @return bool Whether collection is allowed.
+ */
+function local_examtelemetry_collection_allowed(): bool {
+    return (bool)get_config('local_examtelemetry', 'enabled') && \local_examtelemetry\local\license::is_valid();
+}
+
+/**
+ * Clean and limit event details.
+ *
+ * @param object|array $details Event details.
+ * @return array Sanitised details.
+ */
+function local_examtelemetry_clean_details(object|array $details): array {
+    $cleaned = [];
+    foreach ((array)$details as $key => $value) {
+        $key = clean_param((string)$key, PARAM_ALPHANUMEXT);
+        if (count($cleaned) >= 20) {
+            break;
+        }
+        if (is_scalar($value) || $value === null) {
+            $candidate = $cleaned;
+            $candidate[$key] = is_string($value) ? mb_substr(clean_param($value, PARAM_TEXT), 0, 500) : $value;
+            $encoded = json_encode($candidate, JSON_UNESCAPED_SLASHES);
+            if ($encoded !== false && strlen($encoded) <= 4096) {
+                $cleaned = $candidate;
+            }
+        }
+    }
+    return $cleaned;
 }
 
 /**

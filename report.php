@@ -18,7 +18,8 @@
  * Report functionality.
  *
  * @package    local_examtelemetry
- * @copyright  2026 Andrei Toma
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -90,7 +91,6 @@ $PAGE->navbar->add(
 if ($detail) {
     $PAGE->navbar->add(get_string('attemptinvestigation', 'local_examtelemetry'));
 }
-$PAGE->requires->css('/local/examtelemetry/styles.css');
 
 /**
  * Identifies the browser and operating system.
@@ -118,8 +118,10 @@ function local_examtelemetry_device(string $ua): array {
     return [$browser, $os];
 }
 
+$namefields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
+
 if ($detail) {
-    $sql = "SELECT i.*, u.firstname, u.lastname, u.username, u.idnumber, q.name AS quizname,
+    $sql = "SELECT i.*, $namefields, u.username, u.idnumber, q.name AS quizname,
                    c.fullname AS coursename, qa.state AS attemptstate
               FROM {local_examtelemetry_inc} i
               JOIN {user} u ON u.id = i.userid
@@ -278,7 +280,7 @@ $sqlfrom = "FROM {local_examtelemetry_inc} i
             JOIN {quiz} q ON q.id = i.quizid
             JOIN {course} c ON c.id = i.courseid
             JOIN {quiz_attempts} qa ON qa.id = i.attemptid $where";
-$select = "SELECT i.*, u.firstname, u.lastname, u.username, u.idnumber,
+$select = "SELECT i.*, $namefields, u.username, u.idnumber,
                   q.name AS quizname, c.fullname AS coursename, qa.state AS attemptstate";
 
 if ($export === 'csv') {

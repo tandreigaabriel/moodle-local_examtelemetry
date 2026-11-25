@@ -1,9 +1,25 @@
 // This file is part of Moodle - http://moodle.org/.
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Privacy-minimised browser performance telemetry for quiz transitions.
  *
  * @module local_examtelemetry/telemetry
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 const MAX_TEXT = 500;
@@ -193,6 +209,13 @@ const identifySubmissionAction = target => {
     const action = form?.getAttribute('action') || '';
     const name = button.getAttribute('name') || '';
     const actionName = button.dataset.action || '';
+    if (action.includes('processattempt.php') && form.querySelector('[name="finishattempt"][value="1"]')) {
+        return 'confirmation_dialog_opened';
+    }
+    if (action.includes('processattempt.php') && name === 'next' &&
+            form.querySelector('[name="nextpage"][value="-1"]')) {
+        return 'finish_attempt_clicked';
+    }
     const text = button.tagName === 'INPUT' ? button.value : button.textContent;
     const signature = `${name} ${actionName} ${text} ${action}`.toLowerCase();
 
@@ -298,7 +321,8 @@ export const init = config => {
                 const button = event.target.closest('button, input[type="submit"]');
                 const signature = `${button?.name || ''} ${button?.value || ''} ${button?.textContent || ''} ` +
                     `${button?.dataset.action || ''}`.toLowerCase();
-                if (button && (signature.includes('submit') || signature.includes('confirm') ||
+                if (button && (button.matches('.modal [data-action="save"], .modal .modal-footer .btn-primary') ||
+                        signature.includes('submit') || signature.includes('confirm') ||
                         signature.includes('save'))) {
                     send('final_submission_confirmed', null, {}, true);
                     confirmationOpen = false;
