@@ -118,8 +118,10 @@ function local_examtelemetry_device(string $ua): array {
     return [$browser, $os];
 }
 
+$namefields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
+
 if ($detail) {
-    $sql = "SELECT i.*, u.firstname, u.lastname, u.username, u.idnumber, q.name AS quizname,
+    $sql = "SELECT i.*, $namefields, u.username, u.idnumber, q.name AS quizname,
                    c.fullname AS coursename, qa.state AS attemptstate
               FROM {local_examtelemetry_inc} i
               JOIN {user} u ON u.id = i.userid
@@ -278,7 +280,7 @@ $sqlfrom = "FROM {local_examtelemetry_inc} i
             JOIN {quiz} q ON q.id = i.quizid
             JOIN {course} c ON c.id = i.courseid
             JOIN {quiz_attempts} qa ON qa.id = i.attemptid $where";
-$select = "SELECT i.*, u.firstname, u.lastname, u.username, u.idnumber,
+$select = "SELECT i.*, $namefields, u.username, u.idnumber,
                   q.name AS quizname, c.fullname AS coursename, qa.state AS attemptstate";
 
 if ($export === 'csv') {
