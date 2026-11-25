@@ -17,7 +17,8 @@
  * Privacy-minimised browser performance telemetry for quiz transitions.
  *
  * @module local_examtelemetry/telemetry
- * @copyright 2026 Andrei Toma
+ * @copyright  2026 TAG Digital Solutions Ltd <https://tandreig.com>
+ * @author     Andrei Toma
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
