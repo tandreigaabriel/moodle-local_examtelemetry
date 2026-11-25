@@ -37,7 +37,7 @@ if (!get_config('local_examtelemetry', 'enabled')) {
     echo json_encode(['status' => 'error', 'message' => 'disabled']);
     exit;
 }
-if (!\local_examtelemetry\local\license::is_valid()) {
+if (!local_examtelemetry_collection_allowed()) {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'unlicensed']);
     exit;

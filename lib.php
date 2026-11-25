@@ -63,6 +63,15 @@ function local_examtelemetry_require_js(): void {
 }
 
 /**
+ * Check whether collection is enabled and licensed.
+ *
+ * @return bool Whether collection is allowed.
+ */
+function local_examtelemetry_collection_allowed(): bool {
+    return (bool)get_config('local_examtelemetry', 'enabled') && \local_examtelemetry\local\license::is_valid();
+}
+
+/**
  * Clean and limit event details.
  *
  * @param object|array $details Event details.
