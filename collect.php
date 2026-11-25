@@ -34,7 +34,7 @@ require_once(__DIR__ . '/lib.php');
 require_login();
 if (!get_config('local_examtelemetry', 'enabled')) {
     http_response_code(403);
-    echo json_encode(['ok' => false]);
+    echo json_encode(['status' => 'error', 'message' => 'disabled']);
     exit;
 }
 if (!\local_examtelemetry\local\license::is_valid()) {
