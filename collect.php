@@ -17,6 +17,10 @@
 /**
  * Collect functionality.
  *
+ * Beacon requests during pagehide or visibility changes cannot use the normal
+ * external service response flow without putting the sesskey in the URL.
+ * This endpoint validates login, sesskey and attempt ownership.
+ *
  * @package    local_examtelemetry
  * @copyright  2026 Andrei Toma
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
