@@ -90,7 +90,6 @@ $PAGE->navbar->add(
 if ($detail) {
     $PAGE->navbar->add(get_string('attemptinvestigation', 'local_examtelemetry'));
 }
-$PAGE->requires->css('/local/examtelemetry/styles.css');
 
 /**
  * Identifies the browser and operating system.
