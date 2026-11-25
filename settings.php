@@ -97,10 +97,11 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
-    $ADMIN->add('reports', new admin_externalpage(
+}
+
+$ADMIN->add('reports', new admin_externalpage(
         'local_examtelemetry_report',
         get_string('report', 'local_examtelemetry'),
         new moodle_url('/local/examtelemetry/report.php'),
-        'local/examtelemetry:viewreports'
-    ));
-}
+    'local/examtelemetry:viewreports'
+));
